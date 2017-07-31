@@ -70,3 +70,35 @@ def createTess(dataSet, labels):
         myTree[bestFeatLabel][value] = createTess(splitDataSet \
             (dataSet , bestFeat , value) , subLables)
     return myTree
+
+def classify(inputTree, featLabels, testVec):
+    firstStr = list(inputTree.keys())[0]
+    secondDict = inputTree[firstStr]
+    featIndex = list(featLabels).index(firstStr)
+    for key in secondDict.keys():
+        if testVec[featIndex] == key:
+            if type(secondDict[key]).__name__ == 'dict':
+                classLabel = classify(secondDict[key], featLabels , testVec)
+            else:
+                classLabel = secondDict[key]
+    return classLabel
+
+def createDataSet():
+    dataSet = [[1,1, 'yes'],
+              [1,1, 'yes'],
+              [1,0, 'no'],
+              [0,1, 'no'],
+              [0,1, 'no' ]]
+    labels = {'no surfacing', 'flippers'}
+    return dataSet, labels
+
+def storeTree(inputTree, filename):
+    import pickle
+    fw = open(filename , 'wb')
+    pickle.dump(inputTree , fw , pickle.HIGHEST_PROTOCOL)
+    fw.close()
+
+def grabTree(filename):
+    import pickle
+    fr = open(filename, 'rb')
+    return pickle.load(fr)
